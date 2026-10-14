@@ -14,7 +14,7 @@ BucketLab API uses separate environment files for **development** and **producti
 **Purpose:** Configuration for local development with Docker Compose
 
 **When to use:**
-- Running `docker compose -f compose.dev.yaml up --build`
+- Running `docker compose --env-file .env.dev -f compose.dev.yaml up --build`
 - Local development on Raspberry Pi or development machine
 - Testing microservices locally
 - Debugging with live code reload (nodemon)
@@ -46,7 +46,7 @@ APP_RUN_MODE=development                    # Enables dev logging/middleware
 **Purpose:** Configuration for production deployment
 
 **When to use:**
-- Running `docker compose -f compose.production.yaml up --build`
+- Running `docker compose --env-file .env -f compose.production.yaml up --build`
 - Deploying to production server
 - Long-term hosted instances
 - External internet-facing applications
@@ -79,7 +79,7 @@ APP_RUN_MODE=production                     # Disables dev logging
 | Aspect | `.env.dev` | `.env` |
 |--------|-----------|--------|
 | **Compose File** | compose.dev.yaml | compose.production.yaml |
-| **Command** | `docker compose -f compose.dev.yaml up` | `docker compose -f compose.production.yaml up` |
+| **Command** | `docker compose --env-file .env.dev -f compose.dev.yaml up --build` | `docker compose --env-file .env -f compose.production.yaml up` |
 | **Code Reload** | Enabled (nodemon) | Disabled (immutable) |
 | **CORS Origins** | All allowed | Whitelisted only |
 | **Logging** | Verbose (Morgan) | Minimal |

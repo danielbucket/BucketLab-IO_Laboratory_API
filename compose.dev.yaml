@@ -15,10 +15,11 @@ services:
       - /etc/localtime:/etc/localtime:ro
     restart: always
     healthcheck:
-      test: ["CMD", "pgrep", "cloudflared"]
-      interval: 10s
+      test: ["CMD", "pgrep", "-f", "cloudflared"]
+      interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 3
+      start_period: 30s
 
   # MongoDB Server
   mongodb:
@@ -87,6 +88,7 @@ services:
   # Application Gateway Server
   app_server:
     container_name: app_server_dev
+    env_file: .env.dev
     build:
       context: .
       dockerfile: docker/dev/Dockerfile.app
@@ -116,6 +118,7 @@ services:
   # Profiles Server
   profiles_server:
     container_name: profiles_server_dev
+    env_file: .env.dev
     build:
       context: .
       dockerfile: docker/dev/Dockerfile.profiles
@@ -139,6 +142,7 @@ services:
   # Messages Server
   messages_server:
     container_name: messages_server_dev
+    env_file: .env.dev
     build:
       context: .
       dockerfile: docker/dev/Dockerfile.messages
@@ -162,6 +166,7 @@ services:
   # Laboratory Server
   laboratory_server:
     container_name: laboratory_server_dev
+    env_file: .env.dev
     build:
       context: .
       dockerfile: docker/dev/Dockerfile.laboratory
@@ -185,6 +190,7 @@ services:
   # Authentication Server (Internal Service)
   authentication_server:
     container_name: authentication_server_dev
+    env_file: .env.dev
     build:
       context: .
       dockerfile: docker/dev/Dockerfile.authentication
@@ -208,6 +214,7 @@ services:
   # Administration Server (Internal Service)
   administration_server:
     container_name: administration_server_dev
+    env_file: .env.dev
     build:
       context: .
       dockerfile: docker/dev/Dockerfile.administration

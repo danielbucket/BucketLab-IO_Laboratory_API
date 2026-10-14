@@ -21,11 +21,11 @@
 - **Install dependencies**: Run `npm install` in each service directory (`accounts/`, `app/`).
 - **Run tests**: Use `npm test` in the respective service directory. Tests are organized in `__tests__/` and use Jest.
 - **Start services (local/dev)**:
-  - `docker compose -f compose.dev.yaml up --build -d`
+  - `docker compose --env-file .env.dev -f compose.dev.yaml up --build`
 - **Start services (production)**:
-  - `docker compose -f compose.production.yaml up --build -d`
+  - `docker compose --env-file .env -f compose.production.yaml up --build`
 - **Stop services**:
-  - `docker compose -f compose.dev.yaml down`
+  - `docker compose --env-file .env.dev -f compose.dev.yaml down`
 
 ## Conventions & Patterns
 

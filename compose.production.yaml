@@ -6,6 +6,8 @@ services:
   cloudflared:
     env_file: ".env"
     container_name: cloudflared
+    # hostname is set to ensure the tunnel has a consistent identity for Cloudflare
+    # hostname: BucketLab-IO-Laboratory-API
     hostname: bucketlab-API-tunnel
     image: cloudflare/cloudflared:latest
     environment:

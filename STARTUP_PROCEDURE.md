@@ -5,8 +5,14 @@
 This document explains the complete startup procedure for the BucketLab API multi-service application. Understanding this process is crucial for debugging issues, optimizing performance, and maintaining the system.
 
 **Start Command:**
+
+Development:
 ```bash
-docker compose -f compose.dev.yaml up --remove-orphans --build
+docker compose --env-file .env.dev -f compose.dev.yaml up --build
+```
+Production:
+``` bash
+docker compose --env-file .env -f compose.production.yaml up --build
 ```
 
 ---
