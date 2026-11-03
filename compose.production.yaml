@@ -4,28 +4,26 @@
 services:
   # Cloudflare Tunnel Service
   cloudflared:
-    env_file: ".env"
-    container_name: cloudflared
-    # hostname is set to ensure the tunnel has a consistent identity for Cloudflare
-    # hostname: BucketLab-IO-Laboratory-API
-    hostname: bucketlab-API-tunnel
     image: cloudflare/cloudflared:latest
-    environment:
-      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    container_name: prod_bucketlab_api_tunnel
+    hostname: prod.bucketlab.io
+    env_file: .env
+    restart: unless-stopped
     command: tunnel --no-autoupdate run
     network_mode: host
     volumes:
       - /etc/localtime:/etc/localtime:ro
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "pgrep", "cloudflared"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 30s
 
   # MongoDB Server
   mongodb:
-    container_name: bucketlab_database
+    container_name: bucketlab_database_prod
+    env_file: .env
     build:
       context: .
       dockerfile: docker/prod/Dockerfile.mongodb
@@ -38,7 +36,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     networks:
-      - bucketLab_internal
+      - internal
     restart: unless-stopped
     depends_on:
       cloudflared:
@@ -66,7 +64,7 @@ services:
       mongodb:
         condition: service_healthy
     networks:
-      - bucketLab_internal
+      - internal
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4020/health"]
@@ -91,13 +89,11 @@ services:
       - JWT_SECRET=${JWT_SECRET}
     expose:
       - "4021"
-    volumes:
-      - avatars_data:/profiles/uploads/avatars
     depends_on:
       mongodb:
         condition: service_healthy
     networks:
-      - bucketLab_internal
+      - internal
     restart: unless-stopped
 
   # Messages Server (Internal Service)
@@ -116,7 +112,7 @@ services:
       mongodb:
         condition: service_healthy
     networks:
-      - bucketLab_internal
+      - internal
     restart: unless-stopped
 
   # Laboratory Server (Internal Service)
@@ -129,13 +125,12 @@ services:
       - MONGO_URI=mongodb://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@mongodb:27017/?authSource=admin
       - NODE_ENV=${APP_RUN_MODE:-prod}
       - PORT=4023
-    expose:
-      - "4023"
+    expose: ["4023"]
     depends_on:
       mongodb:
         condition: service_healthy
     networks:
-      - bucketLab_internal
+      - internal
     restart: unless-stopped
   
   # Authentication Server (Internal Service)
@@ -156,7 +151,7 @@ services:
       mongodb:
         condition: service_healthy
     networks:
-      - bucketLab_internal
+      - internal
     restart: unless-stopped
 
   # Administration Server (Internal Service)
@@ -177,7 +172,7 @@ services:
       mongodb:
         condition: service_healthy
     networks:
-      - bucketLab_internal
+      - internal
     restart: unless-stopped
 
   # Let's Encrypt Companion (for SSL Certificates)
@@ -187,16 +182,14 @@ services:
   #   volumes:
   #     - certbot_data:/etc/letsencrypt
   #   networks:
-  #     - bucketLab_internal
+  #     - internal
   #   restart: unless-stopped
 
 volumes:
   mongodb_data:
     driver: local
-  avatars_data:
-    driver: local
 
 networks:
-  bucketLab_internal:
+  internal:
     driver: bridge
-    name: bucketLab_internal
+    name: internal

@@ -4,16 +4,13 @@
 services:
   # Cloudflare Tunnel Service
   cloudflared:
-    env_file: .env.dev
-    container_name: cloudflared_dev
     image: cloudflare/cloudflared:latest
-    environment:
-      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    container_name: dev_bucketlab_api_tunnel
+    hostname: dev.bucketlab.io
+    env_file: .env.dev
+    restart: unless-stopped
     command: tunnel --no-autoupdate run
     network_mode: host
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-    restart: always
     healthcheck:
       test: ["CMD", "pgrep", "-f", "cloudflared"]
       interval: 30s
@@ -34,7 +31,7 @@ services:
     volumes:
       - mongodb_data_dev:/data/db
     networks:
-      - bucketLab_internal
+      - internal
     restart: unless-stopped
     depends_on:
       cloudflared:
@@ -59,7 +56,7 @@ services:
       mongodb:
         condition: service_healthy
     networks:
-      - bucketLab_internal
+      - internal
     restart: no
 
   # Mongo Express for DB GUI (debug tool)
@@ -77,7 +74,7 @@ services:
       mongodb:
         condition: service_healthy
     networks:
-      - bucketLab_internal
+      - internal
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081"]
@@ -104,7 +101,7 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - bucketLab_internal
+      - internal
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4020/health"]
@@ -136,7 +133,7 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - bucketLab_internal
+      - internal
     restart: always
 
   # Messages Server
@@ -160,7 +157,7 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - bucketLab_internal
+      - internal
     restart: always
 
   # Laboratory Server
@@ -184,7 +181,7 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - bucketLab_internal
+      - internal
     restart: always
 
   # Authentication Server (Internal Service)
@@ -208,7 +205,7 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - bucketLab_internal
+      - internal
     restart: always
 
   # Administration Server (Internal Service)
@@ -232,16 +229,14 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - bucketLab_internal
+      - internal
     restart: always
 
 volumes:
   mongodb_data_dev:
     driver: local
-  avatars_data_dev:
-    driver: local
 
 networks:
-  bucketLab_internal:
+  internal:
     driver: bridge
-    name: bucketLab_internal
+    name: internal
