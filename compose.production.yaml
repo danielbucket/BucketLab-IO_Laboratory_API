@@ -5,7 +5,7 @@ services:
   # Cloudflare Tunnel Service
   cloudflared:
     image: cloudflare/cloudflared:latest
-    hostname: prod.bucketlab.io
+    hostname: api.bucketlab.io
     env_file: .env
     restart: unless-stopped
     command: tunnel --no-autoupdate run
@@ -135,7 +135,8 @@ services:
       - MONGO_DB_DATABASE=${MONGO_DB_DATABASE}
       - NODE_ENV=${APP_RUN_MODE:-prod}
       - PORT=4023
-    expose: ["4023"]
+    expose: 
+      - "4023"
     depends_on:
       mongodb:
         condition: service_healthy
