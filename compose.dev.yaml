@@ -27,11 +27,11 @@ services:
     environment: {}
     command: mongod --noauth
     ports:
-      - "0.0.0.0:27017:27017"
+      - "0.0.0.0:27018:27017"
     volumes:
       - mongodb_data_dev:/data/db
     networks:
-      - internal
+      - internal-dev
     restart: unless-stopped
     depends_on:
       cloudflared:
@@ -56,7 +56,7 @@ services:
       mongodb:
         condition: service_healthy
     networks:
-      - internal
+      - internal-dev
     restart: no
 
   # Mongo Express for DB GUI (debug tool)
@@ -74,7 +74,7 @@ services:
       mongodb:
         condition: service_healthy
     networks:
-      - internal
+      - internal-dev
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081"]
@@ -94,14 +94,14 @@ services:
       - NODE_ENV=${APP_RUN_MODE:-development}
       - PORT=4020
     ports:
-      - "0.0.0.0:4020:4020"
+      - "0.0.0.0:4120:4020"
     volumes:
       - ./app:/usr/src/app
     depends_on:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - internal
+      - internal-dev
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4020/health"]
@@ -121,6 +121,8 @@ services:
       dockerfile: docker/dev/Dockerfile.profiles
     environment:
       - MONGO_URI=mongodb://mongodb:27017/?authSource=admin
+      - MONGO_DB_USERNAME=
+      - MONGO_DB_PASSWORD=
       - NODE_ENV=${APP_RUN_MODE:-development}
       - PORT=4021
       - JWT_SECRET=${JWT_SECRET}
@@ -133,7 +135,7 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - internal
+      - internal-dev
     restart: always
 
   # Messages Server
@@ -145,6 +147,8 @@ services:
       dockerfile: docker/dev/Dockerfile.messages
     environment:
       - MONGO_URI=mongodb://mongodb:27017/?authSource=admin
+      - MONGO_DB_USERNAME=
+      - MONGO_DB_PASSWORD=
       - NODE_ENV=${APP_RUN_MODE:-development}
       - PORT=4022
       - JWT_SECRET=${JWT_SECRET}
@@ -157,7 +161,7 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - internal
+      - internal-dev
     restart: always
 
   # Laboratory Server
@@ -169,6 +173,8 @@ services:
       dockerfile: docker/dev/Dockerfile.laboratory
     environment:
       - MONGO_URI=mongodb://mongodb:27017/?authSource=admin
+      - MONGO_DB_USERNAME=
+      - MONGO_DB_PASSWORD=
       - NODE_ENV=${APP_RUN_MODE:-development}
       - PORT=4023
       - JWT_SECRET=${JWT_SECRET}
@@ -181,7 +187,7 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - internal
+      - internal-dev
     restart: always
 
   # Authentication Server (Internal Service)
@@ -193,6 +199,8 @@ services:
       dockerfile: docker/dev/Dockerfile.authentication
     environment:
       - MONGO_URI=mongodb://mongodb:27017/?authSource=admin
+      - MONGO_DB_USERNAME=
+      - MONGO_DB_PASSWORD=
       - NODE_ENV=${APP_RUN_MODE:-development}
       - PORT=4024
       - JWT_SECRET=${JWT_SECRET}
@@ -205,7 +213,7 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - internal
+      - internal-dev
     restart: always
 
   # Administration Server (Internal Service)
@@ -217,6 +225,8 @@ services:
       dockerfile: docker/dev/Dockerfile.administration
     environment:
       - MONGO_URI=mongodb://mongodb:27017/?authSource=admin
+      - MONGO_DB_USERNAME=
+      - MONGO_DB_PASSWORD=
       - NODE_ENV=${APP_RUN_MODE:-development}
       - PORT=4025
       - JWT_SECRET=${JWT_SECRET}
@@ -229,7 +239,7 @@ services:
       mongodb-init:
         condition: service_completed_successfully
     networks:
-      - internal
+      - internal-dev
     restart: always
 
 volumes:
@@ -237,6 +247,6 @@ volumes:
     driver: local
 
 networks:
-  internal:
+  internal-dev:
     driver: bridge
-    name: internal
+    name: internal-dev
