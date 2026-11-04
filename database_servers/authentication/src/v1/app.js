@@ -16,6 +16,13 @@ app.use('/', (req, res, next) => {
   next();
 });
 
+app.use('/health', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'BucketLab Authentication Server is healthy and operational.'
+  });
+});
+
 app.use('/', authRouter);
 
 app.all('/*', (req, res) => {

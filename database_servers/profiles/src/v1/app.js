@@ -16,6 +16,13 @@ app.use('/', (req, res, next) => {
   next();
 });
 
+app.use('/health', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'BucketLab Profiles Server is healthy and operational.'
+  });
+});
+
 app.use('/', profilesRouter);
 
 app.all('/*', (req, res) => {

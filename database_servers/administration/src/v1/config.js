@@ -1,1 +1,1 @@
-exports.SERVER_PORT = 4025;
+exports.SERVER_PORT = Number(process.env.PORT || 4027);

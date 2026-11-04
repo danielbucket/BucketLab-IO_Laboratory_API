@@ -16,6 +16,13 @@ app.use('/', (req, res, next) => {
   next();
 });
 
+app.use('/health', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'BucketLab Messages Server is healthy and operational.'
+  });
+});
+
 app.use('/', (req,res,next) => {
   console.log('Request body at Messages Server:', req.body);
   next();
