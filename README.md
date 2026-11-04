@@ -71,7 +71,7 @@ docker compose -f compose.dev.yaml up --build -d
 
 #### Production:
 ```bash
-docker compose -f compose.production.yaml up --build -d
+sudo docker compose --project-name bucketlab-prod --env-file .env -f compose.production.yaml up -d --build
 ```
 
 ### To Stop the Application:
@@ -80,7 +80,7 @@ docker compose -f compose.production.yaml up --build -d
 docker compose -f compose.dev.yaml down
 
 # Production
-docker compose -f compose.production.yaml down
+sudo docker compose --project-name bucketlab-prod --env-file .env -f compose.production.yaml down --remove-orphans
 ```
 
 ## Development:
