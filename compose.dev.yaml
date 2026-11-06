@@ -5,7 +5,7 @@ services:
   # Cloudflare Tunnel Service
   cloudflared:
     image: cloudflare/cloudflared:latest
-    container_name: dev_bucketlab_api_tunnel
+    container_name: bucketlab_api_tunnel_dev
     hostname: dev.bucketlab.io
     env_file: .env.dev
     restart: unless-stopped
@@ -27,7 +27,7 @@ services:
     environment: {}
     command: mongod --noauth
     ports:
-      - "0.0.0.0:27018:27017"
+      - "27017"
     volumes:
       - mongodb_data_dev:/data/db
     networks:
@@ -87,14 +87,18 @@ services:
     container_name: app_server_dev
     env_file: .env.dev
     build:
+    # Dockerfile for the application gateway server in development mode
+    # context is intended to be the root of the project where the Dockerfile and application code reside
       context: .
       dockerfile: docker/dev/Dockerfile.app
     environment:
       - MONGO_URI=mongodb://mongodb:27017/?authSource=admin
       - NODE_ENV=${APP_RUN_MODE:-development}
       - PORT=4020
+    # Port mapping for development, exposing the
+    # internal port 4020 to external port 4020
     ports:
-      - "0.0.0.0:4120:4020"
+      - "0.0.0.0:4020:4020"
     volumes:
       - ./app:/usr/src/app
     depends_on:
@@ -110,7 +114,8 @@ services:
       retries: 3
 
   ## Database Servers
-  ## Each database server has its own container for better isolation and easier debugging during development.
+  # Each database server has its own container for better
+  # isolation and easier debugging during development.
 
   # Profiles Server
   profiles_server:

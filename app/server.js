@@ -1,5 +1,5 @@
 const app = require('./src/v1/app.js');
-const PORT = process.env.PORT || 4020;
+const PORT = process.env.PORT || 4120;
 
 const server = app.listen(PORT, () => {
   console.log(`BucketLab API Server is running on port: ${PORT}`);
